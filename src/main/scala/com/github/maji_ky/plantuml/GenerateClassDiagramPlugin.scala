@@ -1,7 +1,6 @@
 package com.github.maji_ky.plantuml
 
-import sbt.Keys._
-import sbt.{AutoPlugin, Compile, Def}
+import sbt.{AutoPlugin, Def}
 
 object GenerateClassDiagramPlugin extends AutoPlugin {
 
@@ -13,7 +12,7 @@ object GenerateClassDiagramPlugin extends AutoPlugin {
   override lazy val projectSettings: Seq[Def.Setting[_]] = Seq(
     genClassDiagramPackage := "blank",
     genClassDiagramOutputTo := "dist",
-    genClassDiagram <<= generateClassDiagram triggeredBy (compile in Compile)
+    genClassDiagram <<= generateClassDiagram
   )
 
 }
