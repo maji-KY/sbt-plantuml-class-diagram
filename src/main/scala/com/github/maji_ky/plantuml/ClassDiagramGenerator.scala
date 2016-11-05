@@ -4,7 +4,7 @@ import java.io.{File, FilenameFilter}
 
 object ClassDiagramGenerator {
 
-  def generate(rootDir: File, rootPackage: String)(fanout: String => Unit) = {
+  def generate(loader: ClassLoader, rootDir: File, rootPackage: String)(fanout: String => Unit) = {
 
     val dollarFilter = new FilenameFilter {
       override def accept(f: File, name: String): Boolean = {
@@ -17,10 +17,10 @@ object ClassDiagramGenerator {
 
     fanout("@startuml\n")
     listFiles(rootDir).map(toFQCN).foreach { cn =>
-      val clazz = Class.forName(cn)
+      val clazz = loader.loadClass(cn)
 
       import scala.reflect.runtime.universe
-      val runtimeMirror = universe.runtimeMirror(getClass.getClassLoader)
+      val runtimeMirror = universe.runtimeMirror(loader)
       val classSymbol = runtimeMirror.classSymbol(clazz)
       val baseClass = classSymbol.baseClasses.drop(1).takeWhile(x => x.name.toString != "Object" && x.name.toString != "Serializable").take(1).map(_.fullName).headOption
 

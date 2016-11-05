@@ -15,12 +15,17 @@ object GenerateClassDiagramTask {
     val packageRootPath = rootPackage.replace('.', File.separatorChar)
     val classDir = (classDirectory in Compile).value
     val packageRootDir = classDir / packageRootPath
+    val loader = (testLoader in Test).value
 
     Files.createDirectories(Paths.get(outputDir.toURI))
     val bw = Files.newBufferedWriter(Paths.get(outputPath.toURI))
-    ClassDiagramGenerator.generate(packageRootDir, rootPackage) { output =>
-      bw.append(output)
+    try {
+      ClassDiagramGenerator.generate(loader, packageRootDir, rootPackage) { output =>
+        bw.append(output)
+      }
+    } finally {
+      bw.close()
     }
-    bw.close()
+    outputPath
   }
 }

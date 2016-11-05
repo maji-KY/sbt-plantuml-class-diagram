@@ -19,7 +19,7 @@ class ClassDiagramGeneratorSpec extends Specification {
       val url = classLoader.getResource(resourceName)
       val root = new File(url.toURI)
       val sb = new StringBuilder
-      ClassDiagramGenerator.generate(root, rootPackage)(x => sb.append(x))
+      ClassDiagramGenerator.generate(classLoader, root, rootPackage)(x => sb.append(x))
       sb.toString must be equalTo """@startuml
                                     |class com.github.maji_ky.plantuml.ClassDiagramGeneratorSpec extends org.specs2.mutable.Specification {
                                     |val testVal: String

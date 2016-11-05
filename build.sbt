@@ -21,8 +21,6 @@ libraryDependencies ++= Seq(
   "org.specs2" %% "specs2-core" % "3.8.4" % "test"
 )
 
-bintrayOrganization in bintray := Some("maji-ky")
-
 bintrayRepository in bintray := "sbt-plantuml-class-diagram"
 
 licenses += ("GPL-3.0", url("http://www.gnu.org/licenses/gpl-3.0.html"))
