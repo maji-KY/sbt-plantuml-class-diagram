@@ -1,0 +1,1 @@
+# sbt-plantuml-class-diagram
