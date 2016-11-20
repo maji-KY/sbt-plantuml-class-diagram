@@ -1,4 +1,5 @@
 # sbt-plantuml-class-diagram
+[![Build Status](https://travis-ci.org/maji-KY/sbt-plantuml-class-diagram.svg?branch=master)](https://travis-ci.org/maji-KY/sbt-plantuml-class-diagram)
 
 The sbt plug-in that outputs class diagram for PlantUML.
 
