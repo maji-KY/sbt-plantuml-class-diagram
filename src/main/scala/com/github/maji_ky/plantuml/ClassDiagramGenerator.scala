@@ -1,6 +1,7 @@
 package com.github.maji_ky.plantuml
 
 import java.io.{File, FilenameFilter}
+import scala.reflect.runtime.universe
 
 object ClassDiagramGenerator {
 
@@ -22,8 +23,8 @@ object ClassDiagramGenerator {
       import scala.reflect.runtime.universe
       val runtimeMirror = universe.runtimeMirror(loader)
       val classSymbol = runtimeMirror.classSymbol(clazz)
-      val baseClass = classSymbol.baseClasses.drop(1).takeWhile(x => x.name.toString != "Object" && x.name.toString != "Serializable").take(1).map(_.fullName).headOption
-
+      val baseClass = classSymbol.baseClasses.drop(1).takeWhile(x => x.name.toString != "Object" && x.name.toString != "Serializable").take(1)
+        .map(x => x.fullName + typeToString(x.asType.toType, Some(classSymbol.toType))).headOption
 
       val typ = classSymbol.asType.toType
       val valList = typ.declarations.filter(_.asTerm.isVal).map(_.name.toString.trim).toList
@@ -33,6 +34,7 @@ object ClassDiagramGenerator {
         .filter(_.isPublic)
         .filterNot(_.isSynthetic)
         .filterNot(_.name.toString == "<init>")
+        .filterNot(_.name.toString == "$init$")
         .filterNot(_.name.toString.endsWith("_$eq"))
         .filterNot(_.isJava)
         .map { x =>
@@ -45,7 +47,7 @@ object ClassDiagramGenerator {
         }
 
       fanout(
-        s"""class $cn${baseClass.map(x => s" extends $x").mkString} {
+        s"""class $cn${typeToString(classSymbol.toType)}${baseClass.map(x => s" extends $x").mkString} {
             |${declarations.mkString("\n")}
             |}
             |""".stripMargin
@@ -64,26 +66,28 @@ object ClassDiagramGenerator {
         param.name +
         ": " +
         param.typeSignature.typeSymbol.name +
-        param.typeSignature.typeSymbol.asClass.typeParams.map(
-          x => x.asType.toType.asSeenFrom(param.typeSignature, param.typeSignature.typeSymbol.asClass).typeSymbol.name
-        ).mkStringIfNonEmpty("[", ",", "]")
-
+        typeToString(param.typeSignature)
 
     import scala.reflect.runtime.universe.MethodSymbol
     def declToString(term: String, method: MethodSymbol): String =
       term +
         method.name.decodedName +
-        method.typeParams.map(
-          _.name
-        ).mkStringIfNonEmpty("[", ",", "]") +
-        method.paramss.map(
-          _.map(paramToString).mkString(", ")
-        ).mkStringIfNonEmpty("(", ")(", ")") +
+        method.typeParams.map(_.name).mkStringIfNonEmpty("[", ",", "]") +
+        method.paramss.map(_.map(paramToString).mkString(", ")).mkStringIfNonEmpty("(", ")(", ")") +
         ": " +
         method.returnType.typeSymbol.name +
-        method.returnType.typeSymbol.asClass.typeParams.map(
-          x => x.asType.toType.asSeenFrom(method.returnType, method.returnType.typeSymbol.asClass).typeSymbol.name
-        ).mkStringIfNonEmpty("[", ",", "]")
+        typeToString(method.returnType)
+
+    def typeToString(typ: universe.Type, from: Option[universe.Type] = None): String = {
+      val typeSymbol = typ.typeSymbol
+      val seenFromType = from.getOrElse(typ)
+      if (typeSymbol.isClass) typeSymbol.asClass.typeParams.map { x =>
+        val paramType = x.asType.toType.asSeenFrom(seenFromType, typeSymbol.asClass)
+        paramType.typeSymbol.name + typeToString(paramType)
+      }.mkStringIfNonEmpty("[", ",", "]")
+      else
+        ""
+    }
 
     def listFiles(dir: File): Seq[File] = {
       Option(dir.listFiles(dollarFilter)).map(_.toSeq.flatMap {
