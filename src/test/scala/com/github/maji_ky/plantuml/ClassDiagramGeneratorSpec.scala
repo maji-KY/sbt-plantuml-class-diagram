@@ -31,16 +31,16 @@ class ClassDiagramGeneratorSpec extends Specification {
                                     |var testVar: Map[Symbol,Long]
                                     |def testFunc(a: Int): IndexedSeq[Double]
                                     |}
-                                    |class com.github.maji_ky.plantuml.ClassTest[A] {
+                                    |class com.github.maji_ky.plantuml.ClassTest {
                                     |val a: A
                                     |def someType[B](b: B): A
                                     |def nested(arg: Try[Seq[Option[Int]]]): Try[Seq[Option[A]]]
                                     |}
-                                    |class com.github.maji_ky.plantuml.ExtendsTest[A] extends scala.math.Ordering[Seq[Option[A]]] {
+                                    |class com.github.maji_ky.plantuml.ExtendsTest extends scala.math.Ordering {
                                     |def compare(x: Seq[Option[A]], y: Seq[Option[A]]): Int
                                     |}
                                     |class com.github.maji_ky.plantuml.TraitTest {
-                                    |val traitValue: Int
+                                    |val traitValue: ClassTest[Int]
                                     |}
                                     |@enduml""".stripMargin
     }
@@ -58,7 +58,8 @@ class ExtendsTest[A] extends Ordering[Seq[Option[A]]] {
 }
 
 trait TraitTest {
-  val traitValue = 1
+  type Alias = ClassTest[Int]
+  val traitValue: Alias = new Alias(0)
 }
 
 case class CaseClass(foo: String)
