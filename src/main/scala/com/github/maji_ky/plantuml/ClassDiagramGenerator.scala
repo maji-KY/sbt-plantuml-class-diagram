@@ -28,8 +28,8 @@ object ClassDiagramGenerator {
         .map(x => x.fullName).headOption
 
       val typ = classSymbol.asType.toType
-      val valList = typ.declarations.filter(_.asTerm.isVal).map(_.name.toString.trim).toList
-      val varList = typ.declarations.filter(_.asTerm.isVar).map(_.name.toString.trim).toList
+      val valList = typ.declarations.filter(_.isTerm).filter(_.asTerm.isVal).map(_.name.toString.trim).toList
+      val varList = typ.declarations.filter(_.isTerm).filter(_.asTerm.isVar).map(_.name.toString.trim).toList
       val declarations = typ.declarations
         .filter(_.isMethod)
         .filter(_.isPublic)
