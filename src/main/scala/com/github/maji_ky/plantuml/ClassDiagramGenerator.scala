@@ -23,8 +23,9 @@ object ClassDiagramGenerator {
       import scala.reflect.runtime.universe
       val runtimeMirror = universe.runtimeMirror(loader)
       val classSymbol = runtimeMirror.classSymbol(clazz)
-      val baseClass = classSymbol.baseClasses.drop(1).takeWhile(x => x.name.toString != "Object" && x.name.toString != "Serializable").take(1)
-        .map(x => x.fullName + typeToString(x.asType.toType, Some(classSymbol.toType))).headOption
+      val baseClass = classSymbol.baseClasses.drop(1)
+        .takeWhile(x => x.name.toString != "Object" && x.name.toString != "Serializable").take(1)
+        .map(x => x.fullName).headOption
 
       val typ = classSymbol.asType.toType
       val valList = typ.declarations.filter(_.asTerm.isVal).map(_.name.toString.trim).toList
@@ -47,7 +48,7 @@ object ClassDiagramGenerator {
         }
 
       fanout(
-        s"""class $cn${typeToString(classSymbol.toType)}${baseClass.map(x => s" extends $x").mkString} {
+        s"""class $cn${baseClass.map(x => s" extends $x").mkString} {
             |${declarations.mkString("\n")}
             |}
             |""".stripMargin
