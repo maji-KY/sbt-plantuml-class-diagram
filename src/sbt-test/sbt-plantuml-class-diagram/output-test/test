@@ -1,4 +1,3 @@
-> compile
 > genClassDiagram
 $ pause
 $ exists dist/class.diag

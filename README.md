@@ -24,4 +24,3 @@ Generate
 ```
 sbt> genClassDiagram
 ```
-note: need `compile` before `genClassDiagram` to make .class file
