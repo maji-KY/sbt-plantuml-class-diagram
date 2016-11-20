@@ -24,7 +24,6 @@ class ClassDiagramGeneratorSpec extends Specification {
                                     |class com.github.maji_ky.plantuml.ClassDiagramGeneratorSpec extends org.specs2.mutable.Specification {
                                     |val testVal: String
                                     |var testVar: Map[Symbol,Long]
-                                    |def testVar_=(x$1: Map[Symbol,Long]): Unit
                                     |def testFunc(a: Int): IndexedSeq[Double]
                                     |}
                                     |@enduml""".stripMargin

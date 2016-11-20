@@ -33,6 +33,7 @@ object ClassDiagramGenerator {
         .filter(_.isPublic)
         .filterNot(_.isSynthetic)
         .filterNot(_.name.toString == "<init>")
+        .filterNot(_.name.toString.endsWith("_$eq"))
         .filterNot(_.isJava)
         .map { x =>
           val term = x.name.toString match {
