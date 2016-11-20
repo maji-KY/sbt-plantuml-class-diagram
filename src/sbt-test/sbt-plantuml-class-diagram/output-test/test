@@ -1,3 +1,3 @@
 > genClassDiagram
-$ pause
+# $ pause
 $ exists dist/class.diag

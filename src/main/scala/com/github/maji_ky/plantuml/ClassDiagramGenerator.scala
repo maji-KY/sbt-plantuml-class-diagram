@@ -86,10 +86,10 @@ object ClassDiagramGenerator {
         ).mkStringIfNonEmpty("[", ",", "]")
 
     def listFiles(dir: File): Seq[File] = {
-      dir.listFiles(dollarFilter).flatMap {
+      Option(dir.listFiles(dollarFilter)).map(_.toSeq.flatMap {
         case f if f.isDirectory => listFiles(f)
         case f => Seq(f)
-      }
+      }).getOrElse(Seq.empty)
     }
 
     def toFQCN(f: File) = {

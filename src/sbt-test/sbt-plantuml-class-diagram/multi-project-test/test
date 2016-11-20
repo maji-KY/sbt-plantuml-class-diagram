@@ -1,0 +1,4 @@
+> genClassDiagram
+# $ pause
+$ exists p1/dist/class.diag
+$ exists p2/dist/class.diag
