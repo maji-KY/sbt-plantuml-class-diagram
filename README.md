@@ -19,6 +19,8 @@ genClassDiagramPackage := "Root.Package.For.Generate.Diagram"
 
 genClassDiagramIgnoreImplicit := true
 
+genClassDiagramNameFilter := Some("^FilterClassRegex$".r)
+
 enablePlugins(GenerateClassDiagramPlugin)
 ```
 

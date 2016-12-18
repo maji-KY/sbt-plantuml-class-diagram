@@ -16,14 +16,15 @@ class ClassDiagramGeneratorSpec extends Specification {
   def testFunc(a: Int) = (1 to a).map(_.toDouble / 3)
 
   "generate class diagram" should {
+    val rootPackage = "com.github.maji_ky"
+    val classLoader = Thread.currentThread().getContextClassLoader
+    val resourceName = rootPackage.replace('.', '/')
+    val url = classLoader.getResource(resourceName)
+    val root = new File(url.toURI)
+
     "can generate this project" in {
-      val rootPackage = "com.github.maji_ky"
-      val classLoader = Thread.currentThread().getContextClassLoader
-      val resourceName = rootPackage.replace('.', '/')
-      val url = classLoader.getResource(resourceName)
-      val root = new File(url.toURI)
       val sb = new StringBuilder
-      val setting = GenerateSetting(rootPackage = rootPackage, ignoreImplicit = false)
+      val setting = GenerateSetting(rootPackage = rootPackage, ignoreImplicit = false, ignoreClassNameReg = None)
       ClassDiagramGenerator.generate(classLoader, root, setting)(x => sb.append(x))
       sb.toString must be equalTo """@startuml
                                     |class com.github.maji_ky.plantuml.CaseClass {
@@ -47,17 +48,10 @@ class ClassDiagramGeneratorSpec extends Specification {
                                     |}
                                     |@enduml""".stripMargin
     }
-  }
 
-  "ignore implicit parameter" should {
-    "ignore" in {
-      val rootPackage = "com.github.maji_ky"
-      val classLoader = Thread.currentThread().getContextClassLoader
-      val resourceName = rootPackage.replace('.', '/')
-      val url = classLoader.getResource(resourceName)
-      val root = new File(url.toURI)
+    "ignore implicit parameter" in {
       val sb = new StringBuilder
-      val setting = GenerateSetting(rootPackage = rootPackage, ignoreImplicit = true)
+      val setting = GenerateSetting(rootPackage = rootPackage, ignoreImplicit = true, ignoreClassNameReg = None)
       ClassDiagramGenerator.generate(classLoader, root, setting)(x => sb.append(x))
       sb.toString must be equalTo """@startuml
                                     |class com.github.maji_ky.plantuml.CaseClass {
@@ -78,6 +72,22 @@ class ClassDiagramGeneratorSpec extends Specification {
                                     |}
                                     |class com.github.maji_ky.plantuml.TraitTest {
                                     |val traitValue: ClassTest[Int]
+                                    |}
+                                    |@enduml""".stripMargin
+    }
+
+    "ignore class name match" in {
+      val sb = new StringBuilder
+      val setting = GenerateSetting(rootPackage = rootPackage, ignoreImplicit = true, ignoreClassNameReg = Some(".*Test$".r))
+      ClassDiagramGenerator.generate(classLoader, root, setting)(x => sb.append(x))
+      sb.toString must be equalTo """@startuml
+                                    |class com.github.maji_ky.plantuml.CaseClass {
+                                    |val foo: String
+                                    |}
+                                    |class com.github.maji_ky.plantuml.ClassDiagramGeneratorSpec extends org.specs2.mutable.Specification {
+                                    |val testVal: String
+                                    |var testVar: Map[Symbol,Long]
+                                    |def testFunc(a: Int): IndexedSeq[Double]
                                     |}
                                     |@enduml""".stripMargin
     }
