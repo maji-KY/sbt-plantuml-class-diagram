@@ -10,7 +10,7 @@ The sbt plug-in that outputs class diagram for PlantUML.
 ```
 resolvers += Resolver.url("bintray-majiky-repo", url("https://dl.bintray.com/maji-ky/sbt-plugins"))(Resolver.ivyStylePatterns)
 
-addSbtPlugin("com.github.maji_ky" % "sbt-plantuml-class-diagram" % "1.1")
+addSbtPlugin("com.github.maji_ky" % "sbt-plantuml-class-diagram" % "1.2")
 ```
 
 #### build.sbt
