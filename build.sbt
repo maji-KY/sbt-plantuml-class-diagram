@@ -2,7 +2,7 @@ organization := "com.github.maji_ky"
 
 name := "sbt-plantuml-class-diagram"
 
-version := "1.1-SNAPSHOT"
+version := "1.2-SNAPSHOT"
 
 sbtPlugin := true
 
