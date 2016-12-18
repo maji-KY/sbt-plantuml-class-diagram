@@ -17,7 +17,7 @@ object ClassDiagramGenerator {
     val classLength = ".class".length
 
     fanout("@startuml\n")
-    listFiles(rootDir).map(toFQCN).foreach { cn =>
+    listFiles(rootDir).map(toFQCN).filterNot(x => setting.ignoreClassNameReg.exists(_.findFirstMatchIn(x).nonEmpty)).foreach { cn =>
       val clazz = loader.loadClass(cn)
 
       import scala.reflect.runtime.universe

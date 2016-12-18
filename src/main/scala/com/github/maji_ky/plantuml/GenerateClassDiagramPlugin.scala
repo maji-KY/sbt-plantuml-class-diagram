@@ -13,6 +13,7 @@ object GenerateClassDiagramPlugin extends AutoPlugin {
     genClassDiagramPackage := "blank",
     genClassDiagramOutputTo := "dist",
     genClassDiagramIgnoreImplicit := true,
+    genClassDiagramNameFilter := None,
     genClassDiagram := generateClassDiagram.value
   )
 
