@@ -12,6 +12,7 @@ object GenerateClassDiagramPlugin extends AutoPlugin {
   override lazy val projectSettings: Seq[Def.Setting[_]] = Seq(
     genClassDiagramPackage := "blank",
     genClassDiagramOutputTo := "dist",
+    genClassDiagramIgnoreImplicit := true,
     genClassDiagram := generateClassDiagram.value
   )
 

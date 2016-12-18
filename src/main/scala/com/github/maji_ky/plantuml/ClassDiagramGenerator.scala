@@ -5,7 +5,7 @@ import scala.reflect.runtime.universe
 
 object ClassDiagramGenerator {
 
-  def generate(loader: ClassLoader, rootDir: File, rootPackage: String)(fanout: String => Unit) = {
+  def generate(loader: ClassLoader, rootDir: File, setting: GenerateSetting)(fanout: String => Unit) = {
 
     val dollarFilter = new FilenameFilter {
       override def accept(f: File, name: String): Boolean = {
@@ -74,7 +74,7 @@ object ClassDiagramGenerator {
       term +
         method.name.decodedName +
         method.typeParams.map(_.name).mkStringIfNonEmpty("[", ",", "]") +
-        method.paramss.map(_.map(paramToString).mkString(", ")).mkStringIfNonEmpty("(", ")(", ")") +
+        method.paramss.filterNot(setting.ignoreImplicit && _.headOption.exists(_.isImplicit)).map(_.map(paramToString).mkString(", ")).mkStringIfNonEmpty("(", ")(", ")") +
         ": " +
         method.returnType.typeSymbol.name +
         typeToString(method.returnType)
@@ -99,7 +99,7 @@ object ClassDiagramGenerator {
 
     def toFQCN(f: File) = {
       val fragment = f.getPath.drop(pathLength).dropRight(classLength).replace(File.separatorChar, '.')
-      s"$rootPackage.$fragment"
+      s"${setting.rootPackage}.$fragment"
     }
 
   }

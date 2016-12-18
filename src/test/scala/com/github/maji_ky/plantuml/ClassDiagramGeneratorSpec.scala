@@ -8,6 +8,8 @@ import scala.util.{Failure, Try}
 
 class ClassDiagramGeneratorSpec extends Specification {
 
+  sequential
+
   private val testPrivate = 'hoge
   val testVal = "test"
   var testVar = Map(testPrivate -> 5L)
@@ -21,7 +23,42 @@ class ClassDiagramGeneratorSpec extends Specification {
       val url = classLoader.getResource(resourceName)
       val root = new File(url.toURI)
       val sb = new StringBuilder
-      ClassDiagramGenerator.generate(classLoader, root, rootPackage)(x => sb.append(x))
+      val setting = GenerateSetting(rootPackage = rootPackage, ignoreImplicit = false)
+      ClassDiagramGenerator.generate(classLoader, root, setting)(x => sb.append(x))
+      sb.toString must be equalTo """@startuml
+                                    |class com.github.maji_ky.plantuml.CaseClass {
+                                    |val foo: String
+                                    |}
+                                    |class com.github.maji_ky.plantuml.ClassDiagramGeneratorSpec extends org.specs2.mutable.Specification {
+                                    |val testVal: String
+                                    |var testVar: Map[Symbol,Long]
+                                    |def testFunc(a: Int): IndexedSeq[Double]
+                                    |}
+                                    |class com.github.maji_ky.plantuml.ClassTest {
+                                    |val a: A
+                                    |def someType[B](b: B)(implicit i: B): A
+                                    |def nested(arg: Try[Seq[Option[Int]]]): Try[Seq[Option[A]]]
+                                    |}
+                                    |class com.github.maji_ky.plantuml.ExtendsTest extends scala.math.Ordering {
+                                    |def compare(x: Seq[Option[A]], y: Seq[Option[A]]): Int
+                                    |}
+                                    |class com.github.maji_ky.plantuml.TraitTest {
+                                    |val traitValue: ClassTest[Int]
+                                    |}
+                                    |@enduml""".stripMargin
+    }
+  }
+
+  "ignore implicit parameter" should {
+    "ignore" in {
+      val rootPackage = "com.github.maji_ky"
+      val classLoader = Thread.currentThread().getContextClassLoader
+      val resourceName = rootPackage.replace('.', '/')
+      val url = classLoader.getResource(resourceName)
+      val root = new File(url.toURI)
+      val sb = new StringBuilder
+      val setting = GenerateSetting(rootPackage = rootPackage, ignoreImplicit = true)
+      ClassDiagramGenerator.generate(classLoader, root, setting)(x => sb.append(x))
       sb.toString must be equalTo """@startuml
                                     |class com.github.maji_ky.plantuml.CaseClass {
                                     |val foo: String
@@ -45,11 +82,10 @@ class ClassDiagramGeneratorSpec extends Specification {
                                     |@enduml""".stripMargin
     }
   }
-
 }
 
 class ClassTest[A](val a: A) {
-  def someType[B](b: B) = a
+  def someType[B](b: B)(implicit i: B) = a
   def nested(arg:Try[Seq[Option[Int]]]): Try[Seq[Option[A]]] = Failure(new Exception)
 }
 

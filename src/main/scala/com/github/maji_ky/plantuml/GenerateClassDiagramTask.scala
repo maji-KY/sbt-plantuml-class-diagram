@@ -19,8 +19,9 @@ object GenerateClassDiagramTask {
 
     Files.createDirectories(Paths.get(outputDir.toURI))
     val bw = Files.newBufferedWriter(Paths.get(outputPath.toURI))
+    val setting = GenerateSetting(rootPackage = rootPackage, ignoreImplicit = genClassDiagramIgnoreImplicit.value)
     try {
-      ClassDiagramGenerator.generate(loader, packageRootDir, rootPackage) { output =>
+      ClassDiagramGenerator.generate(loader, packageRootDir, setting) { output =>
         bw.append(output)
       }
     } finally {
